@@ -7,6 +7,8 @@ const ThreeJSRecorder = () => {
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
+  const [mimeType, setMimeType] = useState<string | null>(null);
+  const [length, setLength] = useState<string | null>(null);
 
   useEffect(() => {
     let scene: THREE.Scene | null = null;
@@ -60,9 +62,11 @@ const ThreeJSRecorder = () => {
   }, []);
 
   const startRecording = () => {
-    if (!canvasRef.current || !mediaRecorderRef.current) {
+    if (!canvasRef.current) {
       return;
     }
+
+      console.log("start recording");
     const canvasStream = canvasRef.current.captureStream(30); // 30fpsでCanvasをキャプチャ
     // const audioStream = videoRef.current.captureStream().getAudioTracks();
     // console.log('audioStream :>> ', audioStream);
@@ -73,7 +77,8 @@ const ThreeJSRecorder = () => {
 
     mediaRecorderRef.current = new MediaRecorder(combinedStream);
     mediaRecorderRef.current.ondataavailable = (event) => {
-      console.log("event.data.size :>> ", event.data.size);
+      setLength(event.data.size.toString());
+      setMimeType(event.data.type);
       if (event.data.size > 0) {
         recordedChunksRef.current.push(event.data);
       }
@@ -95,6 +100,7 @@ const ThreeJSRecorder = () => {
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state !== "inactive"
     ) {
+      console.log("stop recording");
       mediaRecorderRef.current.stop();
     }
   };
@@ -103,7 +109,8 @@ const ThreeJSRecorder = () => {
     <div style={{ display: "flex", flexDirection: "column" }}>
       <button onClick={startRecording}>Start Recording</button>
       <button onClick={stopRecording}>Stop Recording</button>
-
+      <div>data length: {length}</div>
+      <div>mimeType: {mimeType}</div>
       <video
         ref={videoRef}
         src="video.mp4"
