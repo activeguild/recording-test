@@ -8,7 +8,9 @@ const ThreeJSRecorder = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const [mimeType, setMimeType] = useState<string | null>(null);
+  const [mimeType2, setMimeType2] = useState<string | null>(null);
   const [length, setLength] = useState<string | null>(null);
+  const [memory, setMemory] = useState<string | null>(null);
 
   useEffect(() => {
     let scene: THREE.Scene | null = null;
@@ -37,7 +39,8 @@ const ThreeJSRecorder = () => {
 
       const videoElement = videoRef.current;
       videoTexture = new THREE.VideoTexture(videoElement);
-      const geometry = new THREE.PlaneGeometry(16, 9);
+      const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+      const geometry = new THREE.PlaneGeometry(4, 6);
       const material = new THREE.MeshBasicMaterial({ map: videoTexture });
       mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
@@ -77,17 +80,17 @@ const ThreeJSRecorder = () => {
 
     const options: MediaRecorderOptions = { mimeType: "" };
 
-    if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
-      options.mimeType = "video/webm;codecs=vp9";
-    } else if (MediaRecorder.isTypeSupported("video/mp4")) {
+     if (MediaRecorder.isTypeSupported("video/mp4")) {
       options.mimeType = "video/mp4";
-    }  else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) {
+    } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
+      options.mimeType = "video/webm;codecs=vp9";
+    } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) {
       options.mimeType = "video/webm;codecs=vp8";
       console.warn("No supported MIME type found for MediaRecorder");
     }
 
     mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
-    window.alert(mediaRecorderRef.current.mimeType);
+    setMimeType2(mediaRecorderRef.current.mimeType);
     mediaRecorderRef.current.ondataavailable = (event) => {
       setLength(event.data.size.toString());
       setMimeType(event.data.type);
@@ -122,7 +125,9 @@ const ThreeJSRecorder = () => {
       <button onClick={startRecording}>Start Recording</button>
       <button onClick={stopRecording}>Stop Recording</button>
       <div>data length: {length}</div>
+      <div>mimeType: {mimeType2}</div>
       <div>mimeType: {mimeType}</div>
+      <div>memory: {memory}</div>
       <video
         ref={videoRef}
         src="video.mp4"
@@ -130,19 +135,17 @@ const ThreeJSRecorder = () => {
         loop
         autoPlay
         playsInline
-        style={{ width: "280px" }}
+        style={{ width: "280px", height: "157.5px" }}
       ></video>
       <canvas
         ref={canvasRef}
-        width={280 * window.devicePixelRatio}
-        height={157 * window.devicePixelRatio}
         style={{ maxWidth: "280px", maxHeight: "157.5px" }}
       ></canvas>
       {recordedVideoUrl && (
         <video
           src={recordedVideoUrl}
           controls
-          style={{ maxWidth: "280px", height: "157.5px" }}
+          style={{ maxWidth: "280px", maxHeight: "157.5px" }}
         ></video>
       )}
     </div>
