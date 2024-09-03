@@ -2,17 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 const ThreeJSRecorder = () => {
-  const canvasRef = useRef(null);
-  const videoRef = useRef(null);
-  const [recordedVideoUrl, setRecordedVideoUrl] = useState(null);
-  const mediaRecorderRef = useRef();
-  const recordedChunksRef = useRef([]);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
-    let scene, camera, renderer, videoTexture, mesh;
+    let scene: THREE.Scene | null = null;
+    let camera: THREE.PerspectiveCamera | null = null;
+    let renderer: THREE.WebGLRenderer | null = null;
+    let videoTexture: THREE.VideoTexture | null = null,
+      mesh;
 
     const initThreeJS = () => {
-      if (!videoRef.current) {
+      if (!videoRef.current || !canvasRef.current) {
         return;
       }
 
@@ -40,7 +44,7 @@ const ThreeJSRecorder = () => {
 
       const animate = () => {
         requestAnimationFrame(animate);
-        renderer.render(scene, camera);
+        renderer?.render(scene!, camera!);
       };
 
       animate();
@@ -56,6 +60,9 @@ const ThreeJSRecorder = () => {
   }, []);
 
   const startRecording = () => {
+    if (!canvasRef.current || !mediaRecorderRef.current) {
+      return;
+    }
     const canvasStream = canvasRef.current.captureStream(30); // 30fpsでCanvasをキャプチャ
     // const audioStream = videoRef.current.captureStream().getAudioTracks();
     // console.log('audioStream :>> ', audioStream);
@@ -66,7 +73,7 @@ const ThreeJSRecorder = () => {
 
     mediaRecorderRef.current = new MediaRecorder(combinedStream);
     mediaRecorderRef.current.ondataavailable = (event) => {
-      console.log('event.data.size :>> ', event.data.size);
+      console.log("event.data.size :>> ", event.data.size);
       if (event.data.size > 0) {
         recordedChunksRef.current.push(event.data);
       }
