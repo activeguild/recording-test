@@ -75,6 +75,17 @@ const ThreeJSRecorder = () => {
       // ...audioStream
     ]);
 
+    const options: MediaRecorderOptions = { mimeType: "" };
+
+    if (MediaRecorder.isTypeSupported("video/mp4")) {
+      options.mimeType = "video/mp4";
+    } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
+      options.mimeType = "video/webm;codecs=vp9";
+    } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) {
+      options.mimeType = "video/webm;codecs=vp8";
+      console.warn("No supported MIME type found for MediaRecorder");
+    }
+
     mediaRecorderRef.current = new MediaRecorder(combinedStream, {
       mimeType: "video/webm",
     });
@@ -124,6 +135,8 @@ const ThreeJSRecorder = () => {
       ></video>
       <canvas
         ref={canvasRef}
+        width={280 * window.devicePixelRatio}
+        height={157 * window.devicePixelRatio}
         style={{ maxWidth: "280px", maxHeight: "157.5px" }}
       ></canvas>
       {recordedVideoUrl && (
