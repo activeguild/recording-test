@@ -66,7 +66,7 @@ const ThreeJSRecorder = () => {
       return;
     }
 
-      console.log("start recording");
+    console.log("start recording");
     const canvasStream = canvasRef.current.captureStream(30); // 30fpsでCanvasをキャプチャ
     // const audioStream = videoRef.current.captureStream().getAudioTracks();
     // console.log('audioStream :>> ', audioStream);
@@ -128,7 +128,7 @@ const ThreeJSRecorder = () => {
         <video
           src={recordedVideoUrl}
           controls
-          style={{ maxWidth: "280px" }}
+          style={{ maxWidth: "280px", height: "157.5px" }}
         ></video>
       )}
     </div>
