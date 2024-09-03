@@ -75,7 +75,9 @@ const ThreeJSRecorder = () => {
       // ...audioStream
     ]);
 
-    mediaRecorderRef.current = new MediaRecorder(combinedStream);
+    mediaRecorderRef.current = new MediaRecorder(combinedStream, {
+      mimeType: "video/webm",
+    });
     mediaRecorderRef.current.ondataavailable = (event) => {
       setLength(event.data.size.toString());
       setMimeType(event.data.type);
