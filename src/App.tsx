@@ -87,7 +87,7 @@ const ThreeJSRecorder = () => {
     }
 
     mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
-    console.log(mediaRecorderRef.current.mimeType);
+    window.alert(mediaRecorderRef.current.mimeType);
     mediaRecorderRef.current.ondataavailable = (event) => {
       setLength(event.data.size.toString());
       setMimeType(event.data.type);
