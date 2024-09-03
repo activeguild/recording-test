@@ -86,9 +86,8 @@ const ThreeJSRecorder = () => {
       console.warn("No supported MIME type found for MediaRecorder");
     }
 
-    mediaRecorderRef.current = new MediaRecorder(combinedStream, {
-      mimeType: "video/webm",
-    });
+    mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
+    console.log(mediaRecorderRef.current.mimeType);
     mediaRecorderRef.current.ondataavailable = (event) => {
       setLength(event.data.size.toString());
       setMimeType(event.data.type);
