@@ -4,7 +4,7 @@ import * as THREE from "three";
 const ThreeJSRecorder = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  // const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
+  const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const [mimeType, setMimeType] = useState<string | null>(null);
@@ -78,7 +78,7 @@ const ThreeJSRecorder = () => {
 
     const options: MediaRecorderOptions = { mimeType: "" };
 
-    if (MediaRecorder.isTypeSupported("video/mp4")) {
+    if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1")) {
       options.mimeType = "video/mp4";
     } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
       options.mimeType = "video/webm;codecs=vp9";
@@ -98,9 +98,9 @@ const ThreeJSRecorder = () => {
     };
 
     mediaRecorderRef.current.onstop = () => {
-      // const blob = new Blob(recordedChunksRef.current, { type: "video/mp4" });
-      // const url = URL.createObjectURL(blob);
-      // setRecordedVideoUrl(url);
+      const blob = new Blob(recordedChunksRef.current, { type: "video/mp4" });
+      const url = URL.createObjectURL(blob);
+      setRecordedVideoUrl(url);
     };
 
     mediaRecorderRef.current.onerror = (error) => {
@@ -143,13 +143,13 @@ const ThreeJSRecorder = () => {
         ref={canvasRef}
         style={{ maxWidth: "280px", maxHeight: "157.5px" }}
       ></canvas>
-      {/* {recordedVideoUrl && (
+      {recordedVideoUrl && (
         <video
           src={recordedVideoUrl}
           controls
           style={{ maxWidth: "280px", maxHeight: "157.5px" }}
         ></video>
-      )} */}
+      )}
     </div>
   );
 };
