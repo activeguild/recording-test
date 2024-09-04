@@ -10,6 +10,7 @@ const ThreeJSRecorder = () => {
   const [mimeType, setMimeType] = useState<string | null>(null);
   const [mimeType2, setMimeType2] = useState<string | null>(null);
   const [length, setLength] = useState<string | null>(null);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     let scene: THREE.Scene | null = null;
@@ -17,44 +18,72 @@ const ThreeJSRecorder = () => {
     let renderer: THREE.WebGLRenderer | null = null;
     let videoTexture: THREE.VideoTexture | null = null,
       mesh;
+    (async () => {
+      const initThreeJS = () => {
+        if (!videoRef.current || !canvasRef.current) {
+          return;
+        }
 
-    const initThreeJS = () => {
-      if (!videoRef.current || !canvasRef.current) {
-        return;
-      }
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+        renderer = new THREE.WebGLRenderer({
+          canvas: canvasRef.current,
+          preserveDrawingBuffer: true,
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-      );
-      renderer = new THREE.WebGLRenderer({
-        canvas: canvasRef.current,
-        preserveDrawingBuffer: true,
-      });
-      renderer.setSize(window.innerWidth, window.innerHeight);
+        const videoElement = videoRef.current;
+        videoTexture = new THREE.VideoTexture(videoElement);
+        const geometry = new THREE.PlaneGeometry(4, 6);
+        const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+        mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
 
-      const videoElement = videoRef.current;
-      videoTexture = new THREE.VideoTexture(videoElement);
-      const geometry = new THREE.PlaneGeometry(4, 6);
-      const material = new THREE.MeshBasicMaterial({ map: videoTexture });
-      mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+        camera.position.z = 5;
 
-      camera.position.z = 5;
+        const animate = () => {
+          requestAnimationFrame(animate);
+          renderer?.render(scene!, camera!);
+        };
 
-      const animate = () => {
-        requestAnimationFrame(animate);
-        renderer?.render(scene!, camera!);
+        animate();
       };
 
-      animate();
-    };
+      async function loadAndPlayMP4Audio() {
+        try {
+          // MP4ファイルを取得
+          const response = await fetch("video.mp4");
+          const arrayBuffer = await response.arrayBuffer();
 
-    initThreeJS();
+          // MP4ファイルの音声データをデコード
+          const audioContext = new AudioContext();
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
+          // AudioContextで再生
+          const source = audioContext.createBufferSource();
+          source.buffer = audioBuffer;
+
+          // AudioContextの出力をキャプチャ
+          const destination = audioContext.createMediaStreamDestination();
+          source.connect(destination);
+          source.connect(audioContext.destination);
+          source.start(0);
+
+          // キャプチャしたストリームを保存
+          setAudioStream(destination.stream);
+        } catch (error) {
+          console.error("Error loading or playing audio:", error);
+        }
+      }
+
+      initThreeJS();
+      await loadAndPlayMP4Audio();
+    })();
     return () => {
       if (renderer) {
         renderer.dispose();
@@ -63,7 +92,7 @@ const ThreeJSRecorder = () => {
   }, []);
 
   const startRecording = () => {
-    if (!canvasRef.current || !videoRef.current) {
+    if (!canvasRef.current || !videoRef.current || !audioStream) {
       return;
     }
 
@@ -72,7 +101,7 @@ const ThreeJSRecorder = () => {
     // console.log('audioStream :>> ', audioStream);
     const combinedStream = new MediaStream([
       ...canvasStream.getVideoTracks(),
-      // ...audioStream
+      ...audioStream.getAudioTracks(),
     ]);
 
     const options: MediaRecorderOptions = { mimeType: "" };
