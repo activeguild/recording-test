@@ -15,7 +15,6 @@ const ThreeJSRecorder = () => {
   >(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-
   useEffect(() => {
     let scene: THREE.Scene | null = null;
     let camera: THREE.PerspectiveCamera | null = null;
@@ -155,28 +154,36 @@ const ThreeJSRecorder = () => {
   const stopRecording = () => {
     if (
       mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
+      mediaRecorderRef.current.state !== "inactive" &&
+      audio
     ) {
       console.log("stop recording");
       mediaRecorderRef.current.stop();
+      videoRef.current?.pause();
+      setIsPlaying(false);
+      audio[1].stop(0);
     }
   };
 
   const play = () => {
-    if(!audio || !videoRef.current) {
+    if (!audio || !videoRef.current) {
       return;
     }
 
     audio[1].start(0);
     videoRef.current.play();
-    setIsPlaying(true)
+    setIsPlaying(true);
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <button onClick={play}>Play</button>
-      <button disabled={!isPlaying} onClick={startRecording}>Start Recording</button>
-      <button disabled={!isPlaying} onClick={stopRecording}>Stop Recording</button>
+      <button disabled={!isPlaying} onClick={startRecording}>
+        Start Recording
+      </button>
+      <button disabled={!isPlaying} onClick={stopRecording}>
+        Stop Recording
+      </button>
       <div>data length: {length}</div>
       <div>mimeType: {mimeType2}</div>
       <div>mimeType: {mimeType}</div>
