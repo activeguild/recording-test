@@ -29,7 +29,7 @@ const ThreeJSRecorder = () => {
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(
-          75,
+          50,
           window.innerWidth / window.innerHeight,
           0.1,
           1000
@@ -38,11 +38,13 @@ const ThreeJSRecorder = () => {
           canvas: canvasRef.current,
           preserveDrawingBuffer: true,
         });
-        renderer.setSize(window.innerWidth, window.innerHeight);
 
         const videoElement = videoRef.current;
         videoTexture = new THREE.VideoTexture(videoElement);
-        const geometry = new THREE.PlaneGeometry(4, 6);
+        const geometry = new THREE.PlaneGeometry(
+          1 * window.devicePixelRatio,
+          (280 / 157.5) * window.devicePixelRatio
+        );
         const material = new THREE.MeshBasicMaterial({ map: videoTexture });
         mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
@@ -59,25 +61,15 @@ const ThreeJSRecorder = () => {
 
       async function loadAndPlayMP4Audio() {
         try {
-          // MP4ファイルを取得
           const response = await fetch("video.mp4");
           const arrayBuffer = await response.arrayBuffer();
-
-          // MP4ファイルの音声データをデコード
           const audioContext = new AudioContext();
           const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-          // AudioContextで再生
           const source = audioContext.createBufferSource();
           source.buffer = audioBuffer;
-
-          // AudioContextの出力をキャプチャ
           const destination = audioContext.createMediaStreamDestination();
           source.connect(destination);
           source.connect(audioContext.destination);
-          // source.start(0);
-
-          // キャプチャしたストリームを保存
           setAudio([destination, source]);
         } catch (error) {
           console.error("Error loading or playing audio:", error);
@@ -146,9 +138,8 @@ const ThreeJSRecorder = () => {
       mediaRecorderRef.current!.stop();
     };
 
-    recordedChunksRef.current = []; // Reset recorded chunks
+    recordedChunksRef.current = [];
     mediaRecorderRef.current.start();
-    // setTimeout(() => mediaRecorderRef.current.stop(), 5000); // 5秒後に録音を停止
   };
 
   const stopRecording = () => {
@@ -157,7 +148,6 @@ const ThreeJSRecorder = () => {
       mediaRecorderRef.current.state !== "inactive" &&
       audio
     ) {
-      console.log("stop recording");
       mediaRecorderRef.current.stop();
       videoRef.current?.pause();
       setIsPlaying(false);
