@@ -212,6 +212,7 @@ const ThreeJSRecorder = () => {
       <div>check supported mimeType</div>
       <div>video/mp4;codecs=avc1.42E01E,opus: {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,opus").toString()}</div>
       <div>video/mp4;codecs=avc1.42E01E,mp4a.40.2: {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2").toString()}</div>
+      <div>video/mp4;codecs=avc1,mp4a: {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a").toString()}</div>
       <div>video/webm;codecs=vp9: {MediaRecorder.isTypeSupported("video/webm;codecs=vp9").toString()}</div>
       <div>video/webm;codecs=vp8: {MediaRecorder.isTypeSupported("video/webm;codecs=vp8").toString()}</div>
 
