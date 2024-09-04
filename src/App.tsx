@@ -259,6 +259,12 @@ const ThreeJSRecorder = () => {
         ).toString()}
       </div>
       <div>
+        video/mp4;codecs=avc1.42E01E:{" "}
+        {MediaRecorder.isTypeSupported(
+          "video/mp4;codecs=avc1.42E01E"
+        ).toString()}
+      </div>
+      <div>
         video/mp4;codecs=avc1,mp4a:{" "}
         {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a").toString()}
       </div>
