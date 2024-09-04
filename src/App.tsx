@@ -98,9 +98,9 @@ const ThreeJSRecorder = () => {
     };
 
     mediaRecorderRef.current.onstop = () => {
-      const blob = new Blob(recordedChunksRef.current, { type: "video/mp4" });
-      const url = URL.createObjectURL(blob);
-      setRecordedVideoUrl(url);
+      // const blob = new Blob(recordedChunksRef.current, { type: "video/mp4" });
+      // const url = URL.createObjectURL(blob);
+      // setRecordedVideoUrl(url);
     };
 
     recordedChunksRef.current = []; // Reset recorded chunks
