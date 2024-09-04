@@ -194,19 +194,19 @@ const ThreeJSRecorder = () => {
       <div>Set recording mimType:</div>
       <select value={selectedValue} onChange={handleChange}>
         <option value="video/mp4;codecs=avc1.42E01E,mp4a.40.2">
-          video/mp4;codecs=avc1.42E01E,mp4a.40.2
+          video/mp4;codecs=avc1.42E01E,mp4a.40.2:{MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2").toString()}
         </option>
         <option value="video/mp4;codecs=avc1.42E01E">
-          video/mp4;codecs=avc1.42E01E
+          video/mp4;codecs=avc1.42E01E:{MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E").toString()}
         </option>
         <option value="video/mp4;codecs=avc1.42E01E,opus">
-          video/mp4;codecs=avc1.42E01E,opus
+          video/mp4;codecs=avc1.42E01E,opus:{MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,opus").toString()}
         </option>
         <option value="video/mp4;codecs=avc1,mp4a">
-          video/mp4;codecs=avc1,mp4a
+          video/mp4;codecs=avc1,mp4a:{MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a").toString()}
         </option>
-        <option value="video/webm;codecs=vp9">video/webm;codecs=vp9</option>
-        <option value="video/webm;codecs=vp8">video/webm;codecs=vp8</option>
+        <option value="video/webm;codecs=vp9">video/webm;codecs=vp9:{MediaRecorder.isTypeSupported("video/webm;codecs=vp9").toString()}</option>
+        <option value="video/webm;codecs=vp8">video/webm;codecs=vp8:{MediaRecorder.isTypeSupported("video/webm;codecs=vp8").toString()}</option>
       </select>
       <button
         disabled={
@@ -245,37 +245,6 @@ const ThreeJSRecorder = () => {
           style={{ maxWidth: "280px", maxHeight: "157.5px" }}
         ></video>
       )}
-      <div>check supported mimeType</div>
-      <div>
-        video/mp4;codecs=avc1.42E01E,opus:{" "}
-        {MediaRecorder.isTypeSupported(
-          "video/mp4;codecs=avc1.42E01E,opus"
-        ).toString()}
-      </div>
-      <div>
-        video/mp4;codecs=avc1.42E01E,mp4a.40.2:{" "}
-        {MediaRecorder.isTypeSupported(
-          "video/mp4;codecs=avc1.42E01E,mp4a.40.2"
-        ).toString()}
-      </div>
-      <div>
-        video/mp4;codecs=avc1.42E01E:{" "}
-        {MediaRecorder.isTypeSupported(
-          "video/mp4;codecs=avc1.42E01E"
-        ).toString()}
-      </div>
-      <div>
-        video/mp4;codecs=avc1,mp4a:{" "}
-        {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a").toString()}
-      </div>
-      <div>
-        video/webm;codecs=vp9:{" "}
-        {MediaRecorder.isTypeSupported("video/webm;codecs=vp9").toString()}
-      </div>
-      <div>
-        video/webm;codecs=vp8:{" "}
-        {MediaRecorder.isTypeSupported("video/webm;codecs=vp8").toString()}
-      </div>
     </div>
   );
 };
