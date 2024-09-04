@@ -10,7 +10,6 @@ const ThreeJSRecorder = () => {
   const [mimeType, setMimeType] = useState<string | null>(null);
   const [mimeType2, setMimeType2] = useState<string | null>(null);
   const [length, setLength] = useState<string | null>(null);
-  const [memory, setMemory] = useState<string | null>(null);
 
   useEffect(() => {
     let scene: THREE.Scene | null = null;
@@ -39,7 +38,6 @@ const ThreeJSRecorder = () => {
 
       const videoElement = videoRef.current;
       videoTexture = new THREE.VideoTexture(videoElement);
-      const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
       const geometry = new THREE.PlaneGeometry(4, 6);
       const material = new THREE.MeshBasicMaterial({ map: videoTexture });
       mesh = new THREE.Mesh(geometry, material);
@@ -127,7 +125,6 @@ const ThreeJSRecorder = () => {
       <div>data length: {length}</div>
       <div>mimeType: {mimeType2}</div>
       <div>mimeType: {mimeType}</div>
-      <div>memory: {memory}</div>
       <video
         ref={videoRef}
         src="video.mp4"
