@@ -10,7 +10,11 @@ const ThreeJSRecorder = () => {
   const [mimeType, setMimeType] = useState<string | null>(null);
   const [mimeType2, setMimeType2] = useState<string | null>(null);
   const [length, setLength] = useState<string | null>(null);
-  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [audio, setAudio] = useState<
+    [MediaStreamAudioDestinationNode, AudioBufferSourceNode] | null
+  >(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
 
   useEffect(() => {
     let scene: THREE.Scene | null = null;
@@ -72,10 +76,10 @@ const ThreeJSRecorder = () => {
           const destination = audioContext.createMediaStreamDestination();
           source.connect(destination);
           source.connect(audioContext.destination);
-          source.start(0);
+          // source.start(0);
 
           // キャプチャしたストリームを保存
-          setAudioStream(destination.stream);
+          setAudio([destination, source]);
         } catch (error) {
           console.error("Error loading or playing audio:", error);
         }
@@ -91,8 +95,8 @@ const ThreeJSRecorder = () => {
     };
   }, []);
 
-  const startRecording = () => {
-    if (!canvasRef.current || !videoRef.current || !audioStream) {
+  const startRecording = async () => {
+    if (!canvasRef.current || !videoRef.current || !audio) {
       return;
     }
 
@@ -101,7 +105,7 @@ const ThreeJSRecorder = () => {
     // console.log('audioStream :>> ', audioStream);
     const combinedStream = new MediaStream([
       ...canvasStream.getVideoTracks(),
-      ...audioStream.getAudioTracks(),
+      ...audio[0].stream.getAudioTracks(),
     ]);
 
     const options: MediaRecorderOptions = { mimeType: "" };
@@ -158,10 +162,21 @@ const ThreeJSRecorder = () => {
     }
   };
 
+  const play = () => {
+    if(!audio || !videoRef.current) {
+      return;
+    }
+
+    audio[1].start(0);
+    videoRef.current.play();
+    setIsPlaying(true)
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <button onClick={startRecording}>Start Recording</button>
-      <button onClick={stopRecording}>Stop Recording</button>
+      <button onClick={play}>Play</button>
+      <button disabled={!isPlaying} onClick={startRecording}>Start Recording</button>
+      <button disabled={!isPlaying} onClick={stopRecording}>Stop Recording</button>
       <div>data length: {length}</div>
       <div>mimeType: {mimeType2}</div>
       <div>mimeType: {mimeType}</div>
@@ -170,7 +185,6 @@ const ThreeJSRecorder = () => {
         src="video.mp4"
         muted
         loop
-        autoPlay
         playsInline
         style={{ width: "280px", height: "157.5px" }}
       ></video>
