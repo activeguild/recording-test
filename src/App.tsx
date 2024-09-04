@@ -4,7 +4,7 @@ import * as THREE from "three";
 const ThreeJSRecorder = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
+  // const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const [mimeType, setMimeType] = useState<string | null>(null);
@@ -138,13 +138,13 @@ const ThreeJSRecorder = () => {
         ref={canvasRef}
         style={{ maxWidth: "280px", maxHeight: "157.5px" }}
       ></canvas>
-      {recordedVideoUrl && (
+      {/* {recordedVideoUrl && (
         <video
           src={recordedVideoUrl}
           controls
           style={{ maxWidth: "280px", maxHeight: "157.5px" }}
         ></video>
-      )}
+      )} */}
     </div>
   );
 };
