@@ -77,7 +77,11 @@ const ThreeJSRecorder = () => {
 
     const options: MediaRecorderOptions = { mimeType: "" };
 
-    if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2")) {
+    if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,opus")) {
+      options.mimeType = "video/mp4;codecs=avc1.42E01E,opus";
+    } else if (
+      MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2")
+    ) {
       options.mimeType = "video/mp4;codecs=avc1.42E01E,mp4a.40.2";
     } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
       options.mimeType = "video/webm;codecs=vp9";
@@ -96,9 +100,9 @@ const ThreeJSRecorder = () => {
       }
     };
 
-     mediaRecorderRef.current.onerror = (error) => {
+    mediaRecorderRef.current.onerror = (error) => {
       console.log("error", error);
-     }
+    };
     mediaRecorderRef.current.onstop = () => {
       const blob = new Blob(recordedChunksRef.current, { type: "video/mp4" });
       const url = URL.createObjectURL(blob);
