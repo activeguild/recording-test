@@ -14,6 +14,13 @@ const ThreeJSRecorder = () => {
     [MediaStreamAudioDestinationNode, AudioBufferSourceNode] | null
   >(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(
+    "video/mp4;codecs=avc1.42E01E,mp4a.40.2"
+  );
+
+  const handleChange: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
+    setSelectedValue(event.target.value);
+  };
 
   useEffect(() => {
     let scene: THREE.Scene | null = null;
@@ -91,7 +98,6 @@ const ThreeJSRecorder = () => {
       return;
     }
 
-    console.log("start recording");
     const canvasStream = canvasRef.current.captureStream(30); // 30fpsでCanvasをキャプチャ
     // console.log('audioStream :>> ', audioStream);
     const combinedStream = new MediaStream([
@@ -99,20 +105,22 @@ const ThreeJSRecorder = () => {
       ...audio[0].stream.getAudioTracks(),
     ]);
 
-    const options: MediaRecorderOptions = { mimeType: "" };
+    // window.alert(selectedValue)
 
-    if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,opus")) {
-      options.mimeType = "video/mp4;codecs=avc1.42E01E,opus";
-    } else if (
-      MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2")
-    ) {
-      options.mimeType = "video/mp4;codecs=avc1.42E01E,mp4a.40.2";
-    } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
-      options.mimeType = "video/webm;codecs=vp9";
-    } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) {
-      options.mimeType = "video/webm;codecs=vp8";
-      console.warn("No supported MIME type found for MediaRecorder");
-    }
+    const options: MediaRecorderOptions = { mimeType: selectedValue };
+
+    // if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,opus")) {
+    //   options.mimeType = "video/mp4;codecs=avc1.42E01E,opus";
+    // } else if (
+    //   MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2")
+    // ) {
+    //   options.mimeType = "video/mp4;codecs=avc1.42E01E,mp4a.40.2";
+    // } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
+    //   options.mimeType = "video/webm;codecs=vp9";
+    // } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) {
+    //   options.mimeType = "video/webm;codecs=vp8";
+    //   console.warn("No supported MIME type found for MediaRecorder");
+    // }
 
     mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
     setMimeType2(mediaRecorderRef.current.mimeType);
@@ -178,18 +186,46 @@ const ThreeJSRecorder = () => {
 
   return (
     <div
-      style={{ display: "flex", flexDirection: "column", paddingTop: "40px" }}
+      style={{ display: "flex", flexDirection: "column", paddingTop: "100px" }}
     >
-      <button disabled={!!recordedVideoUrl || isPlaying} onClick={play}>{"Play Video"}</button>
-      <button disabled={!!recordedVideoUrl || !isPlaying || mediaRecorderRef.current?.state === 'recording'} onClick={startRecording}>
+      <button disabled={!!recordedVideoUrl || isPlaying} onClick={play}>
+        {"Play Video"}
+      </button>
+      <div>Set recording mimType:</div>
+      <select value={selectedValue} onChange={handleChange}>
+        <option value="video/mp4;codecs=avc1.42E01E,mp4a.40.2">
+          video/mp4;codecs=avc1.42E01E,mp4a.40.2
+        </option>
+        <option value="video/mp4;codecs=avc1.42E01E">
+          video/mp4;codecs=avc1.42E01E
+        </option>
+        <option value="video/mp4;codecs=avc1.42E01E,opus">
+          video/mp4;codecs=avc1.42E01E,opus
+        </option>
+        <option value="video/mp4;codecs=avc1,mp4a">
+          video/mp4;codecs=avc1,mp4a
+        </option>
+        <option value="video/webm;codecs=vp9">video/webm;codecs=vp9</option>
+        <option value="video/webm;codecs=vp8">video/webm;codecs=vp8</option>
+      </select>
+      <button
+        disabled={
+          !!recordedVideoUrl ||
+          !isPlaying ||
+          mediaRecorderRef.current?.state === "recording"
+        }
+        onClick={startRecording}
+      >
         Start Recording
       </button>
       <button disabled={!isPlaying} onClick={stopRecording}>
         Stop Recording
       </button>
       <div>data length: {length}</div>
-      <div>mimeType: {mimeType2}</div>
-      <div>mimeType: {mimeType}</div>
+      <div>
+        mimeType(Specify when creating a MediaRecorder instance.): {mimeType2}
+      </div>
+      <div>mimeType(Data received on ondataavailable event): {mimeType}</div>
       <video
         ref={videoRef}
         src="video.mp4"
@@ -210,12 +246,30 @@ const ThreeJSRecorder = () => {
         ></video>
       )}
       <div>check supported mimeType</div>
-      <div>video/mp4;codecs=avc1.42E01E,opus: {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,opus").toString()}</div>
-      <div>video/mp4;codecs=avc1.42E01E,mp4a.40.2: {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2").toString()}</div>
-      <div>video/mp4;codecs=avc1,mp4a: {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a").toString()}</div>
-      <div>video/webm;codecs=vp9: {MediaRecorder.isTypeSupported("video/webm;codecs=vp9").toString()}</div>
-      <div>video/webm;codecs=vp8: {MediaRecorder.isTypeSupported("video/webm;codecs=vp8").toString()}</div>
-
+      <div>
+        video/mp4;codecs=avc1.42E01E,opus:{" "}
+        {MediaRecorder.isTypeSupported(
+          "video/mp4;codecs=avc1.42E01E,opus"
+        ).toString()}
+      </div>
+      <div>
+        video/mp4;codecs=avc1.42E01E,mp4a.40.2:{" "}
+        {MediaRecorder.isTypeSupported(
+          "video/mp4;codecs=avc1.42E01E,mp4a.40.2"
+        ).toString()}
+      </div>
+      <div>
+        video/mp4;codecs=avc1,mp4a:{" "}
+        {MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a").toString()}
+      </div>
+      <div>
+        video/webm;codecs=vp9:{" "}
+        {MediaRecorder.isTypeSupported("video/webm;codecs=vp9").toString()}
+      </div>
+      <div>
+        video/webm;codecs=vp8:{" "}
+        {MediaRecorder.isTypeSupported("video/webm;codecs=vp8").toString()}
+      </div>
     </div>
   );
 };
