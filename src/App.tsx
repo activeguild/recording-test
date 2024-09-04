@@ -29,7 +29,7 @@ const ThreeJSRecorder = () => {
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(
-          50,
+          56,
           window.innerWidth / window.innerHeight,
           0.1,
           1000
@@ -148,6 +148,8 @@ const ThreeJSRecorder = () => {
       mediaRecorderRef.current.state !== "inactive" &&
       audio
     ) {
+      console.log("stop recording");
+
       mediaRecorderRef.current.stop();
       videoRef.current?.pause();
       setIsPlaying(false);
@@ -160,15 +162,26 @@ const ThreeJSRecorder = () => {
       return;
     }
 
-    audio[1].start(0);
-    videoRef.current.play();
-    setIsPlaying(true);
+    if (!isPlaying) {
+      console.log("play video");
+
+      audio[1].start(0);
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current?.pause();
+      setIsPlaying(false);
+      // audio[1].stop(0);
+      audio[1].stop(0);
+    }
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <button onClick={play}>Play</button>
-      <button disabled={!isPlaying} onClick={startRecording}>
+    <div
+      style={{ display: "flex", flexDirection: "column", paddingTop: "40px" }}
+    >
+      <button disabled={!!recordedVideoUrl || isPlaying} onClick={play}>{"Play Video"}</button>
+      <button disabled={!!recordedVideoUrl || !isPlaying || mediaRecorderRef.current?.state === 'recording'} onClick={startRecording}>
         Start Recording
       </button>
       <button disabled={!isPlaying} onClick={stopRecording}>
