@@ -77,8 +77,8 @@ const ThreeJSRecorder = () => {
 
     const options: MediaRecorderOptions = { mimeType: "" };
 
-    if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a.40.2")) {
-      options.mimeType = "video/mp4;codecs=avc1,mp4a.40.2";
+    if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1.42E01E,mp4a.40.2")) {
+      options.mimeType = "video/mp4;codecs=avc1.42E01E,mp4a.40.2";
     } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
       options.mimeType = "video/webm;codecs=vp9";
     } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) {
