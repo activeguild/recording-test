@@ -191,7 +191,7 @@ const ThreeJSRecorder = () => {
         <option value="video/mp4;codecs=avc1">
           video/mp4;codecs=avc1:
           {MediaRecorder.isTypeSupported(
-            "video/mp4;codecs=avc1.42E01E,mp4a.40.2"
+            "video/mp4;codecs=avc1"
           ).toString()}
         </option>
         <option value="video/mp4;codecs=avc1.42E01E,mp4a.40.2">
